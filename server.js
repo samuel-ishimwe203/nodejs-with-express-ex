@@ -80,3 +80,79 @@
 // app.listen(process.env.PORT, () => {
 //     console.log(process.env.Message,process.env.PORT)
 // })
+
+
+const dotenv = require('dotenv')
+dotenv.config()
+const fs = require('fs/promises')
+const path = require('path')
+const file = path.join(__dirname, './data/auth.json')
+const express = require('express')
+const { use } = require('react')
+const app = express()
+app.use(express.json())
+
+
+const readFile = async () => {
+    const data = await fs.readFile(file, 'utf8')
+    return JSON.parse(data)
+}
+
+const writeData = async (data) => {
+    await fs.writeFile(file, JSON.stringify(data,null,2), 'utf8')
+    return
+}
+
+
+app.post('/signup', async (req, res) => {
+    try {
+     
+        const { username, password } = req.body
+        if (!username || !password) {
+             return res.status(404).json({ message: 'usename and password is required' })
+        }
+           const data = await readFile()
+        
+        const user = data.find(user => user.username === username)
+        if (user) {
+           return  res.status(409).json({ message: 'user already exist please' })
+        }
+        else {
+            
+            data.push({ username, password })
+            await writeData(data)
+            return res.status(201).json({ message: ' data posted well ', data })
+            
+        }
+        
+    } catch (error) {
+        res.status(500).json({message: 'server error'})
+
+        
+    }
+})
+
+
+app.post('/login', async (req, res) => {
+    try {
+
+        const { username, password } = req.body
+        if (!username || !password) {
+            return res.status(404).json({ message: 'usename and password is required' })
+        }
+        const data = await readFile()
+        
+        const user = data.find(user => user.username === username && user.password === password)
+        if (!user) {
+            return res.status(400).json({message: 'invird credentials'})
+        }
+         return res.status(200).json({message:"login well"})
+        
+    } catch (error) {
+        
+    }
+})
+
+app.listen(process.env.PORT, () => {
+    console.log(process.env.Message, process.env.PORT)
+})

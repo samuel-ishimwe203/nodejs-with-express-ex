@@ -10,8 +10,6 @@ app.get("/todo", (req, res) => {
   if (status) {
     const filtering = status.filter((data) => data.status === status);
 
-    console.log(filtering);
-
     return res.status(200).json({ message: " data retrived well", filtering });
   }
   res.status(200).json({ message: "data retrived well", objData });
