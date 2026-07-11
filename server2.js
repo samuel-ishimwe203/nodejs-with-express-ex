@@ -22,7 +22,7 @@ const writeToFile = async (text) => {
   } catch (error) {
     console.log("now data failed to be written");
   }
-};nnn
+};
 
 const server = http.createServer(async (req, res) => {
   if (req.url === "/user" && req.method == "GET") {
